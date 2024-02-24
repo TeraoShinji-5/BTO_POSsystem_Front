@@ -43,7 +43,7 @@ export default function Login() {
         // userNameが空でない場合のみ実行
         if (userName) {
             window.alert(`ようこそ ${userName}さま！`);
-            window.location.href = `http://127.0.0.1:3000/shopping?token=${token}`;
+            window.location.href = `https://tech0-gen-5-step4-studentwebapp-8.azurewebsites.net/shopping?token=${token}`;
         }
     }, [userName, token]); // userNameとtokenが変更されたときにのみ実行
 
