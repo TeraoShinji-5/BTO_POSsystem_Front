@@ -6,7 +6,7 @@ export default function Login() {
     const [userName, setUserName] = useState(''); // ユーザー名の状態を管理
     const [token, setToken] = useState(''); // ユーザー名の状態を管理
 
-    const handleSend = async (event) => {
+    const handleSend = async (event: any) => {
         event.preventDefault();
         const formData = new FormData(formRef.current);
         const body_msg = JSON.stringify({
@@ -14,7 +14,7 @@ export default function Login() {
             password: formData.get('password'),
         });
 
-        const response = await fetch('http://127.0.0.1:8000/login', {
+        const response = await fetch('https://tech0-gen-5-step4-studentwebapp-7.azurewebsites.net/login', {
             method: 'POST',
             body: body_msg,
             headers: {

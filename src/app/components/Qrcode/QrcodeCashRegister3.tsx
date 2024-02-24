@@ -16,19 +16,19 @@ interface Product {
 export default function QrcodeReaderComponent() {
     const [scannedTime, setScannedTime] = useState(new Date());
     const [scannedResult, setScannedResult] = useState('');
-    const [products, setProducts] = useState([]);
+    const [products, setProducts] = useState<Product[]>([]);
     const [newProduct, setNewProduct] = useState<Product | null>(null);
     const [quantity, setQuantity] = useState<number>(0); // 数量を数値で管理
-    const [productTax, setProductTax] = useState(0.1);
-    const [total, setTotal] = useState(0);
-    const [totalWithTax, setTotalWithTax] = useState(0);
+    const [productTax, setProductTax] = useState<number>(0.1);
+    const [total, setTotal] = useState<number>(0);
+    const [totalWithTax, setTotalWithTax] = useState<number>(0);
     const [userName, setUserName] = useState('');
     const [token, setToken] = useState('');
-    const user_token = useSearchParams().get("token");
+    const user_token: string | null = useSearchParams().get("token");
 
 
     async function fetchUser(token: string) {
-        const res = await fetch(`http://127.0.0.1:8000/shopping?token=${user_token}`, { cache: "no-cache" });
+        const res = await fetch(`https://tech0-gen-5-step4-studentwebapp-7.azurewebsites.net/shopping?token=${user_token}`, { cache: "no-cache" });
         if (!res.ok) {
             throw new Error('Failed to fetch user');
         }
@@ -39,7 +39,8 @@ export default function QrcodeReaderComponent() {
         const fetchAndSetUser = async () => {
         const userData = await fetchUser(token);
         setUserName(userData.user_name);
-        setToken(user_token);
+        // user_tokenがnullでないことを確認し、nullであれば空文字列""を使用
+        setToken(user_token !== null ? user_token : "");
         console.log(userData);
         };
         fetchAndSetUser();
@@ -55,9 +56,9 @@ export default function QrcodeReaderComponent() {
     };
 
     // QRコードから商品情報を渡す関数
-    async function fetchProduct(scannedResult) {
+    async function fetchProduct(scannedResult: any) {
         const encodedQrcode = encodeURIComponent(scannedResult);
-        const res = await fetch(`http://127.0.0.1:8000/qrcode?qrcode=${encodedQrcode}`, { cache: "no-cache" });
+        const res = await fetch(`https://tech0-gen-5-step4-studentwebapp-7.azurewebsites.net/qrcode?qrcode=${encodedQrcode}`, { cache: "no-cache" });
         if (!res.ok) {
             throw new Error('Failed to fetch product');
         }
@@ -102,30 +103,37 @@ export default function QrcodeReaderComponent() {
     useEffect(() => {
         // 税抜き合計金額を計算
         const newTotal = products.reduce((sum, product) => sum + product.price * product.quantity, 0);
-    
-        let newTotalWithTax = newTotal; // 初期値を税抜き合計金額として設定
-    
-        // newProduct が null でない、かつ tax が undefined でない場合にのみ再計算
-        if (newProduct && newProduct.tax !== undefined) {
-            newTotalWithTax = products.reduce((sum, product) =>
-                sum + Math.round((product.price * product.quantity * (1 + productTax)) * 10) / 10, 0);
-        }
-    
+
+        // 税込み合計金額を計算（すべての商品に税率を適用）
+        const newTotalWithTax = products.reduce((sum, product) =>
+            sum + Math.round((product.price * product.quantity * (1 + productTax)) * 10) / 10, 0);
+            console.log(productTax);
+
         setTotal(Math.round(newTotal)); // 税抜き合計金額をステートにセット
         setTotalWithTax(Math.round(newTotalWithTax)); // 税込み合計金額をステートにセット
-    }, [products, newProduct?.tax]); // products配列かnewProduct.taxが変わるたびに再計算
+        console.log('New Total:', newTotal);
+        console.log('New Total With Tax:', newTotalWithTax);
+    }, [products, productTax]); // products配列かproductTaxが変わるたびに再計算
+
 
 
 
     // 商品情報をnewProductにセットする関数
     const handleSetNewProduct = (product: any) => {
-    setProductTax(product.tax);
-    setNewProduct(product);
-    console.log(product)
-    // quantityを整数として更新
-    const quantityInt = parseInt(product.quantity, 10);
-    setQuantity(quantityInt);
+        console.log("Received product:", product);
+        setProductTax(product.tax_percent);
+        console.log(product.tax);
+        console.log(productTax);
+        setNewProduct(product);
+        console.log(product)
+        // quantityを整数として更新
+        const quantityInt = parseInt(product.quantity, 10);
+        setQuantity(quantityInt);
     };
+
+    useEffect(() => {
+        console.log("Updated productTax:", productTax);
+    }, [productTax]);
 
 
     // 選択されている商品を削除する関数
@@ -153,9 +161,11 @@ export default function QrcodeReaderComponent() {
             return; // newProduct が null の場合はここで処理を終了
         }
 
-        const updatedQuantity = parseInt(quantity, 10);
+        // parseIntを使用せずにquantityを直接参照
+        const updatedQuantity = quantity;
 
-        if (isNaN(updatedQuantity) || updatedQuantity < 0) {
+        // quantityが負の値でないことを確認
+        if (updatedQuantity < 0) {
             console.error("Invalid quantity input");
             return;
         }
@@ -174,7 +184,14 @@ export default function QrcodeReaderComponent() {
 
     // newProduct.quantityをquantityステートにセットする関数
     const handleEditQuantity = () => {
-        setQuantity(newProduct.quantity);
+        if (newProduct !== null) {
+            setQuantity(newProduct.quantity);
+        } else {
+            console.error("No product selected or newProduct is null");
+            // newProductがnullである場合の処理をここに追加することもできます
+            // 例えば、quantityを0にリセットするなど
+            // setQuantity(0);
+        }
     };
 
     // newProductが更新されたときにquantityステートも更新する
@@ -213,8 +230,8 @@ export default function QrcodeReaderComponent() {
 
         // すべての状態をクリア
         setProducts([]);
-        setNewProduct({});
-        setQuantity('');
+        setNewProduct(null);
+        setQuantity(0);
         setProductTax(0.1);
         setTotal(0);
         setTotalWithTax(0);
@@ -227,7 +244,7 @@ export default function QrcodeReaderComponent() {
         // buyTimeをISO文字列に変換
         const buyTimeString = buyTime.toISOString();
 
-        const response = await fetch('http://127.0.0.1:8000/trade', {
+        const response = await fetch('https://tech0-gen-5-step4-studentwebapp-7.azurewebsites.net/trade', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -259,7 +276,7 @@ export default function QrcodeReaderComponent() {
         const buyTimeString = buyTime.toISOString();
         console.log(products);
 
-        const response = await fetch('http://127.0.0.1:8000/deal_detail', {
+        const response = await fetch('https://tech0-gen-5-step4-studentwebapp-7.azurewebsites.net/deal_detail', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -334,3 +351,11 @@ export default function QrcodeReaderComponent() {
         </>
     );
 }
+
+
+
+
+
+
+
+
