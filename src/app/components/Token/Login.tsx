@@ -8,28 +8,32 @@ export default function Login() {
 
     const handleSend = async (event: any) => {
         event.preventDefault();
-        const formData = new FormData(formRef.current);
-        const body_msg = JSON.stringify({
-            user_name: formData.get('user_name'),
-            password: formData.get('password'),
-        });
 
-        const response = await fetch('https://tech0-gen-5-step4-studentwebapp-7.azurewebsites.net/login', {
-            method: 'POST',
-            body: body_msg,
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
+        // formRef.currentがnullでないことを確認
+        if (formRef.current) {
+            const formData = new FormData(formRef.current);
+            const body_msg = JSON.stringify({
+                user_name: formData.get('user_name'),
+                password: formData.get('password'),
+            });
 
-        if (response.ok) {
-            const jsonData = await response.json();
-            setToken(jsonData.access_token);
-            setUserName(jsonData.user_name);
-            console.log(jsonData);
-        } else {
-            console.error('Login request failed:', response.statusText);
-            window.alert(`Login request failed`);
+            const response = await fetch('https://tech0-gen-5-step4-studentwebapp-7.azurewebsites.net/login', {
+                method: 'POST',
+                body: body_msg,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (response.ok) {
+                const jsonData = await response.json();
+                setToken(jsonData.access_token);
+                setUserName(jsonData.user_name);
+                console.log(jsonData);
+            } else {
+                console.error('Login request failed:', response.statusText);
+                window.alert(`Login request failed`);
+            }
         }
     };
 
