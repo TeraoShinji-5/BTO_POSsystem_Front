@@ -1,10 +1,13 @@
 'use client';
 import { useRef, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+
 
 export default function Login() {
     const formRef = useRef<HTMLFormElement>(null);
     const [userName, setUserName] = useState(''); // ユーザー名の状態を管理
     const [token, setToken] = useState(''); // ユーザー名の状態を管理
+    const router = useRouter();
 
     const handleSend = async (event: any) => {
         event.preventDefault();
@@ -43,7 +46,7 @@ export default function Login() {
         // userNameが空でない場合のみ実行
         if (userName) {
             window.alert(`ようこそ ${userName}さま！`);
-            window.location.href = `https://tech0-gen-5-step4-studentwebapp-8.azurewebsites.net/shopping?token=${token}`;
+            router.push(`/shopping?token=${token}`);
         }
     }, [userName, token]); // userNameとtokenが変更されたときにのみ実行
 
