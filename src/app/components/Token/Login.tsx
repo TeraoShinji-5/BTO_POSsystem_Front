@@ -2,7 +2,7 @@
 import { useRef, useEffect, useState } from 'react';
 
 export default function Login() {
-    const formRef = useRef();
+    const formRef = useRef<HTMLFormElement>(null);
     const [userName, setUserName] = useState(''); // ユーザー名の状態を管理
     const [token, setToken] = useState(''); // ユーザー名の状態を管理
 
