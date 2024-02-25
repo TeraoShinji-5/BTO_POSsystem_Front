@@ -1,13 +1,13 @@
-"use client";// import先は適宜置き換えてください。
-import React from 'react';
+"use client";
+import React, { Suspense } from 'react';
 import QrcodeCashRegister3 from './../components/Qrcode/QrcodeCashRegister3';
 
 export default function Shopping() {
   return (
       <main>
-        <div>
+        <Suspense>
           <QrcodeCashRegister3 />
-        </div>
+          </Suspense>
       </main>
   );
 }
