@@ -54,7 +54,7 @@ export default function Login() {
         <>
             <div>
                 <form ref={formRef} onSubmit={handleSend} style={{ width: '100%' }}>
-                    <h1>Welcome back to 駄菓子屋!</h1>
+                    <h1>ようこそ BTO駄菓子屋商店へ!</h1>
                     <div>
                         <label>
                             ユーザー名:
