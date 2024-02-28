@@ -85,7 +85,7 @@ export default function QrcodeReaderComponent() {
                         return updatedProducts;
                     } else {
                         // 新しい商品を追加する（初期個数を設定）
-                        return [...prevProducts, { ...newProduct, quantity: 1 }];
+                        return [{ ...newProduct, quantity: 1 }, ...prevProducts];
                     }
                 });
                 setScannedResult('');
@@ -170,13 +170,14 @@ export default function QrcodeReaderComponent() {
             return;
         }
 
-        setProducts(prevProducts =>
-            prevProducts.map(product =>
-                product.product_id === newProduct.product_id
-                    ? { ...product, quantity: updatedQuantity }
-                    : product
-            )
-        );
+        setProducts(prevProducts => {
+            // 更新された商品を見つけて一時的に保持する
+            const updatedProduct = { ...prevProducts.find(product => product.product_id === newProduct.product_id), quantity: updatedQuantity };
+            // 更新された商品を除外した新しい商品リストを作成する
+            const filteredProducts = prevProducts.filter(product => product.product_id !== newProduct.product_id);
+            // 更新された商品をリストの最初に追加する
+            return [updatedProduct, ...filteredProducts];
+        });
 
         setNewProduct(prevNewProduct => prevNewProduct ? { ...prevNewProduct, quantity: updatedQuantity } : null);
     };
@@ -300,55 +301,82 @@ export default function QrcodeReaderComponent() {
     };
 
     return (
-        <>
-        <div>ようこそ {userName}さん！</div>
-            <div>
-            <h2>スキャン結果：{newProduct?.product_id ?? '未スキャン'}</h2>
-            <h2>商品名：{newProduct?.product_name ?? '商品名未定'}</h2>
-            <h2>値段：{newProduct?.price ?? 0}円</h2>
-            <h2>
-                個数：
-                {newProduct?.quantity !== undefined ? (
-                    <>
-                        <input
-                            type="number"
-                            value={quantity}
-                            onChange={handleQuantityChange}
-                            onBlur={handleQuantityBlur}
-                            min="1"
-                            max="99"
-                            style={{ width: '3em' }}
-                        />
-                        <button onClick={handleEditQuantity}>数量変更</button>
-                    </>
-                ) : (
-                    '商品を選択してください。'
-                )}
-            </h2>
-                <button onClick={handleRemoveProduct}>リストから削除</button> {/* 削除ボタン */}
+        <div className="container"> 
+            <div className='font-bold mb-4'>ようこそ {userName}さん！</div>
 
-                {/* 商品と値段を表示 */}
-                {products.map((product, index) => (
-                    <div key={index}>
-                        <h2>
-                            {product.product_name}    {product.price}円    x{product.quantity}個    {product.price * product.quantity}円
-                            <span style={{ marginLeft: '20px' }}> {/* ここで間隔を調整します */}
-                                <button onClick={() => handleSetNewProduct(product)}>選択</button>
-                            </span>
-                        </h2>
-                    </div>
-                ))}
-            </div>
-            {/* 合計金額を表示 */}
-            <h2>合計:{totalWithTax} 円 （税抜: {total} 円）</h2>
-            <button onClick={handlePurchase}>購入</button>
-            <QrcodeReader
+            {/* バーコードスキャンセクション */}
+            <div className="mb-8 border p-4 rounded-lg shadow">
+                <h2 className="text-lg font-bold mb-4">バーコードスキャン</h2>
+                <QrcodeReader
                 onScanSuccess={onNewScanResult}
                 onScanFailure={(error: any) => {
                     // console.log('Qr scan error');
                 }}
-            />
-        </>
+                />
+            </div>
+                
+            {/* スキャン情報表示セクション */}
+            <div className="mb-8 border p-4 rounded-lg shadow">
+                <div className="1em">
+                    <h2 className="text-lg font-bold mb-4">スキャン情報</h2>
+                        <div className='mb-1'>スキャン結果：{newProduct?.product_id ?? '未スキャン'}</div>
+                        <div className='mb-1'>商品名：{newProduct?.product_name ?? '商品名未定'}</div>
+                        <div className='mb-1'>値段：{newProduct?.price ?? 0}円</div>
+                        <div className='mb-4'>
+                            個数：
+                            {newProduct?.quantity !== undefined ? (
+                                <div className="inline-flex items-center">
+                                    <input
+                                        type="number"
+                                        value={quantity}
+                                        onChange={handleQuantityChange}
+                                        onBlur={handleQuantityBlur}
+                                        min="1"
+                                        max="99"
+                                        style={{ width: '3em' }}
+                                    />
+                                    <button onClick={handleEditQuantity}
+                                    className="ml-4 bg-blue-500 hover:bg-blue-700 text-white text-white text-sm font-bold py-1 px-2 rounded mr-2">
+                                        数量変更
+                                    </button>
+                                </div>
+                            ) : (
+                                '商品を選択してください。'
+                            )}
+                        </div>
+                            <button onClick={handleRemoveProduct}
+                            className="bg-gray-500 hover:bg-gray-700 text-white text-white text-sm font-bold py-1 px-2 rounded mr-2">
+                                リストから削除</button> {/* 削除ボタン */}
+                    </div>
+                </div>
+
+            {/* カート表示セクション */}
+            <div className="mb-8 p-4 border rounded-lg shadow">
+            <h2 className="text-lg font-bold mb-4">カート</h2>
+            {products.map((product, index) => (
+                // 商品ごとに上線を引き、最初の商品以外は上線をなくす
+                <div key={index}className={`pt-4 ${index > 0 ? 'border-t' : ''}`}>
+                    <div className="flex justify-between items-center">
+                        <div>
+                            <h3 className="font-bold">{product.product_name} </h3>
+                            <p>{product.price}円    x{product.quantity}個    {product.price * product.quantity}円</p>
+                        </div>
+                        <button onClick={() => handleSetNewProduct(product)}className="ml-4 bg-gray-500 hover:bg-gray-700 text-white text-white text-sm font-bold py-1 px-2 rounded mr-2">
+                            選択
+                        </button>
+                    </div>
+                </div>
+            ))}
+            </div>
+
+            {/* 合計金額を表示 */}
+                <div className="text-center">
+                    <h2 className="font-bold">合計: {totalWithTax} 円 （税抜: {total} 円）</h2>
+                    <button onClick={handlePurchase} 
+                    className="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4">
+                        購入</button>
+                </div>
+    </div>
     );
 }
 
