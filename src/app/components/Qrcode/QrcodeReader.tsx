@@ -95,8 +95,15 @@ useEffect(() => {
 }, []);
 
 return (
-    <div className='container mx-auto'>
+    <div className="barcode-scan-section">
     <div className='max-w-screen-lg' id={qrcodeRegionId} />
+    <button
+        className='bg-gray-500 hover:bg-gray-700 text-white text-sm font-bold py-1 px-2 rounded mr-2'
+        onClick={() => getCameras()}
+        >
+        カメラ選択
+        </button>
+    
     <div>
         {cameras.length > 0 ? (
         <Select
@@ -109,28 +116,22 @@ return (
             onChange={async (camera) => await switchCamera(camera.value)}
         />
         ) : (
-        <p>カメラがありません</p>
+            <div className='mb-4'>カメラがありません</div>
         )}
     </div>
     <div>
         <button
         className='bg-blue-500 hover:bg-blue-700 text-white text-sm font-bold py-1 px-2 rounded mr-2'
-        onClick={() => getCameras()}
-        >
-        カメラ取得
-        </button>
-        <button
-        className='bg-blue-500 hover:bg-blue-700 text-white text-sm font-bold py-1 px-2 rounded mr-2'
         onClick={async () => await startScan()}
         disabled={!cameraPermission && selectedCameraId == ''}
         >
-        スキャン開始
+        商品スキャン
         </button>
         <button
         className='bg-red-500 hover:bg-red-700 text-white text-sm font-bold py-1 px-2 rounded'
         onClick={async () => await stopScan()}
         >
-        スキャン停止
+        スキャン終了
         </button>
     </div>
     </div>
