@@ -172,9 +172,18 @@ export default function QrcodeReaderComponent() {
 
         setProducts(prevProducts => {
             // 更新された商品を見つけて一時的に保持する
-            const updatedProduct = { ...prevProducts.find(product => product.product_id === newProduct.product_id), quantity: updatedQuantity };
+            const existingProduct = prevProducts.find(product => product.product_id === newProduct.product_id);
+            if (!existingProduct) {
+            // ここでエラーハンドリングをするか、新しい商品を追加する処理を実装する
+            // 例: return prevProducts; // 単純に何も変更せずに戻る
+            throw new Error('Product not found'); // またはエラーを投げる
+        }
+            // 更新された商品を一時的に保持する。ここで`existingProduct`はundefinedではないことが保証されている。
+            const updatedProduct = { ...existingProduct, quantity: updatedQuantity };
+            
             // 更新された商品を除外した新しい商品リストを作成する
             const filteredProducts = prevProducts.filter(product => product.product_id !== newProduct.product_id);
+            
             // 更新された商品をリストの最初に追加する
             return [updatedProduct, ...filteredProducts];
         });
