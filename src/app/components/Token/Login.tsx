@@ -52,24 +52,50 @@ export default function Login() {
 
     return (
         <>
-            <div>
-                <form ref={formRef} onSubmit={handleSend} style={{ width: '100%' }}>
-                    <h1>ようこそ BTO駄菓子屋商店へ!</h1>
-                    <div>
-                        <label>
-                            ユーザー名:
-                            <input name="user_name" type="text" />
-                        </label>
+             <style jsx>{`
+                .background-flex {
+                    background-image: repeating-linear-gradient(
+                        90deg,
+                        #ff4500,
+                        #ff4500 50px,
+                        #ff6347 50px,
+                        #ff6347 100px
+                    );
+                    height: 100vh;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                }
+                .form-container {
+                    background: #fff;
+                    padding: 20px;
+                }
+                `}</style>
+    
+            <div className="background-flex">
+                <div className="form-container">
+                    <div className="form-content">
+                        <form ref={formRef} onSubmit={handleSend}>
+                            <h1 className="text-6xl font-bold mb-10 text-center">BTO商店</h1>
+                            <div className="mb-4">
+                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="user_name">
+                                    ユーザー名:
+                                </label>
+                                <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="user_name" name="user_name" type="text" required />
+                            </div>
+                            <div className="mb-6">
+                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
+                                    パスワード：
+                                </label>
+                                <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" id="password" name="password" type="password" required />
+                            </div>
+                            <button className="bg-orange-400 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+                                SIGN IN
+                            </button>
+                        </form>
                     </div>
-                    <div>
-                        <label>
-                            パスワード：
-                            <input name="password" type="password" />
-                        </label>
-                    </div>
-                    <button type="submit">SIGN IN</button>
-                </form>
-            </div>
-        </>
-    );
-}
+                </div>
+                </div>
+            </>
+        );
+    }
