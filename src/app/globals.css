@@ -6,7 +6,7 @@
     /* 縦方向のグラデーションを設定し、ストライプ幅を広げる */
     background-image: repeating-linear-gradient(
         90deg,
-        #ff4500,
+        #6a00ff,
         #ff4500 50px, /* ストライプの幅を広げる */
         #ff6347 50px,
         #ff6347 100px /* ストライプの幅を広げる */
