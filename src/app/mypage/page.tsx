@@ -1,12 +1,12 @@
 "use client";
 import React, { Suspense } from 'react';
-import Mychoice from './../components/Choice/Mychoice';
+import Mychoice from './../components/Choice/MyChoice';
 
 export default function Shopping() {
   return (
       <main>
         <Suspense>
-          <Mychoice />
+          <MyChoice />
           </Suspense>
       </main>
   );
