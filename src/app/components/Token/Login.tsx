@@ -46,7 +46,7 @@ export default function Login() {
         // userNameが空でない場合のみ実行
         if (userName) {
             window.alert(`ようこそ ${userName}さま！`);
-            router.push(`/shopping?token=${token}`);
+            router.push(`/mypage?token=${token}`);
         }
     }, [userName, token]); // userNameとtokenが変更されたときにのみ実行
 
