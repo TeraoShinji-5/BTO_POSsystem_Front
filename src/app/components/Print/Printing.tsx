@@ -1,13 +1,12 @@
 'use client';
-import { useRef, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import JsBarcode from 'jsbarcode';
 
 
 export default function BarcodeGeneratorComponent() {
     const [userName, setUserName] = useState('');
-    const [vegetableName, setVegetableName] = useState('');
-    const [barcode, setBarcode] = useState('');
+    const [productName, setProductName] = useState('');
     const [price, setPrice] = useState('');
     const [peer, setPeer] = useState('');
     const registration_id: string | null = useSearchParams().get("registration_id");
@@ -25,8 +24,7 @@ export default function BarcodeGeneratorComponent() {
     useEffect(() => {
         const fetchAndSetRegistration = async () => {
             const registrationData = await fetchRegistration();
-            setVegetableName(registrationData.vegetable_name);
-            setBarcode(registrationData.barcode);
+            setProductName(registrationData.product_name);
             setPrice(registrationData.price);
             setPeer(registrationData.peer);
             setUserName(registrationData.user_name);
@@ -49,7 +47,7 @@ export default function BarcodeGeneratorComponent() {
     return (
         <div className="container">
             <canvas id="barcode"></canvas>
-            <div className='font-bold mb-4'>{vegetableName}</div>
+            <div className='font-bold mb-4'>{productName}</div>
             <div className='font-bold mb-4'>値段： {price}</div>
             <div className='font-bold mb-4'>peer： {peer}</div>
             <div className='font-bold mb-4'>生産者： {userName}</div>
