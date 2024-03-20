@@ -5,15 +5,18 @@ import { useRouter } from 'next/navigation';
 
 interface Registrations {
     registration_id: number;
+    quantity: number;
     price: number;
     peer: number;
     barcode: number;
     range_name: string;
     initial_counts: number;
-    vegetable_name: string;
+    now_counts: number;
+    product_name: string;
     user_name: string;
     message: string;
     registration_date: string;
+    last_update: string;
     // 他のプロパティがあればここに追加
 }
 
@@ -97,7 +100,7 @@ export default function BarcodeGeneratorComponent() {
             const formData = new FormData(formRef.current);
             const body_msg = JSON.stringify({
                 token: token,
-                vegetable_name: formData.get('vegetable_name'),
+                product_name: formData.get('product_name'),
                 price: formData.get('price'),
                 peer: formData.get('peer'),
                 initial_counts: formData.get('initial_counts'),
@@ -120,7 +123,7 @@ export default function BarcodeGeneratorComponent() {
                 // ポップアップで合計金額を表示
                 const jsonData = await response.json();
                 console.log(jsonData);
-                window.alert(`${jsonData.vegetable_name}を ${jsonData.price}円 (${jsonData.peer}peer)で ${jsonData.initial_counts}個登録しました！`);
+                window.alert(`${jsonData.product_name}を ${jsonData.price}円 (${jsonData.peer}peer)で ${jsonData.initial_counts}個登録しました！`);
                 window.open(`/print?registration_id=${jsonData.registration_id}`, '_blank');
                 router.push(`/mypage?token=${token}`);
             } else {
@@ -137,13 +140,13 @@ export default function BarcodeGeneratorComponent() {
                 <form ref={formRef} onSubmit={handleSend}>
                     <h1 className="text-6xl font-bold mb-10 text-center">ゆーあーる  やさい  とうろく！</h1>
                     <div className="mb-4">
-                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="vegetable_name">
+                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="product_name">
                             野菜:
                         </label>
                             <select
                                 className="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                id="vegetable_name"
-                                name="vegetable_name"
+                                id="product_name"
+                                name="product_name"
                                 required
                             >
                                 {vegetablesData.map((vegetable, index) => (

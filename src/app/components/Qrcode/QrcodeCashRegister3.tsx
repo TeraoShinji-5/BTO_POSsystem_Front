@@ -4,10 +4,11 @@ import QrcodeReader from './QrcodeReader';
 import { useSearchParams } from 'next/navigation';
 
 interface Product {
-    product_id: number;
-    product_qrcode: number;
+    registration_id: number;
+    barcode: number;
     product_name: string;
     price: number;
+    peer: number;
     quantity: number;
     tax: number;
     // 他のプロパティがあればここに追加
@@ -22,6 +23,7 @@ export default function QrcodeReaderComponent() {
     const [productTax, setProductTax] = useState<number>(0.1);
     const [total, setTotal] = useState<number>(0);
     const [totalWithTax, setTotalWithTax] = useState<number>(0);
+    const [totalPeer, setTotalPeer] = useState<number>(0);
     const [userName, setUserName] = useState('');
     const [token, setToken] = useState('');
     const user_token: string | null = useSearchParams().get("token");
@@ -57,8 +59,8 @@ export default function QrcodeReaderComponent() {
 
     // QRコードから商品情報を渡す関数
     async function fetchProduct(scannedResult: any) {
-        const encodedQrcode = encodeURIComponent(scannedResult);
-        const res = await fetch(`https://tech0-gen-5-step4-studentwebapp-7.azurewebsites.net/qrcode?qrcode=${encodedQrcode}`, { cache: "no-cache" });
+        const encodedBarcode = encodeURIComponent(scannedResult);
+        const res = await fetch(`https://tech0-gen-5-step4-studentwebapp-7.azurewebsites.net/barcode?barcode=${encodedBarcode}`, { cache: "no-cache" });
         if (!res.ok) {
             throw new Error('Failed to fetch product');
         }
@@ -74,7 +76,7 @@ export default function QrcodeReaderComponent() {
                 console.log(newProduct);
                 setProducts(prevProducts => {
                     // 既存のproducts配列でproduct_idが一致する商品を探す
-                    const existingProductIndex = prevProducts.findIndex(p => p.product_id === newProduct.product_id);
+                    const existingProductIndex = prevProducts.findIndex(p => p.registration_id === newProduct.registration_id);
                     if (existingProductIndex !== -1) {
                         // 一致する商品があれば、quantityを更新する
                         const updatedProducts = [...prevProducts];
@@ -104,14 +106,19 @@ export default function QrcodeReaderComponent() {
         // 税抜き合計金額を計算
         const newTotal = products.reduce((sum, product) => sum + product.price * product.quantity, 0);
 
+        // 合計peerを計算
+        const newTotalPeer = products.reduce((sum, product) => sum + product.peer * product.quantity, 0);
+
         // 税込み合計金額を計算（すべての商品に税率を適用）
         const newTotalWithTax = products.reduce((sum, product) =>
             sum + Math.round((product.price * product.quantity * (1 + productTax)) * 10) / 10, 0);
             console.log(productTax);
 
         setTotal(Math.round(newTotal)); // 税抜き合計金額をステートにセット
+        setTotalPeer(Math.round(newTotalPeer)); // 合計peerをステートにセット
         setTotalWithTax(Math.round(newTotalWithTax)); // 税込み合計金額をステートにセット
         console.log('New Total:', newTotal);
+        console.log('New Total Peer:', newTotalPeer);
         console.log('New Total With Tax:', newTotalWithTax);
     }, [products, productTax]); // products配列かproductTaxが変わるたびに再計算
 
@@ -142,7 +149,7 @@ export default function QrcodeReaderComponent() {
             console.error("No product selected");
             return;
         }
-        setProducts(prevProducts => prevProducts.filter(product => product.product_id !== newProduct?.product_id));
+        setProducts(prevProducts => prevProducts.filter(product => product.registration_id !== newProduct?.registration_id));
         setNewProduct(null); // newProductをnullにリセット
     };
 
@@ -172,7 +179,7 @@ export default function QrcodeReaderComponent() {
 
         setProducts(prevProducts => {
             // 更新された商品を見つけて一時的に保持する
-            const existingProduct = prevProducts.find(product => product.product_id === newProduct.product_id);
+            const existingProduct = prevProducts.find(product => product.registration_id === newProduct.registration_id);
             if (!existingProduct) {
             // ここでエラーハンドリングをするか、新しい商品を追加する処理を実装する
             // 例: return prevProducts; // 単純に何も変更せずに戻る
@@ -180,10 +187,10 @@ export default function QrcodeReaderComponent() {
         }
             // 更新された商品を一時的に保持する。ここで`existingProduct`はundefinedではないことが保証されている。
             const updatedProduct = { ...existingProduct, quantity: updatedQuantity };
-            
+
             // 更新された商品を除外した新しい商品リストを作成する
-            const filteredProducts = prevProducts.filter(product => product.product_id !== newProduct.product_id);
-            
+            const filteredProducts = prevProducts.filter(product => product.registration_id !== newProduct.registration_id);
+
             // 更新された商品をリストの最初に追加する
             return [updatedProduct, ...filteredProducts];
         });
@@ -245,6 +252,7 @@ export default function QrcodeReaderComponent() {
         setProductTax(0.1);
         setTotal(0);
         setTotalWithTax(0);
+        setTotalPeer(0);
         setUserName('ゲスト');
         setToken('');
     };
@@ -266,6 +274,7 @@ export default function QrcodeReaderComponent() {
                 machine_id: 1,
                 total_charge: totalWithTax,
                 total_charge_wo_tax: total,
+                total_peer: 0,
                 buy_time: buyTimeString,
             }),
         });
@@ -293,9 +302,10 @@ export default function QrcodeReaderComponent() {
             },
             body: JSON.stringify({
                 products: products.map(product => ({
-                    product_qrcode: product.product_qrcode,
+                    barcode: product.barcode,
                     product_name: product.product_name,
                     price: product.price,
+                    peer: 0,
                     quantity: product.quantity,
                     tax_percent: productTax,
                     buy_time: buyTimeString,
@@ -309,8 +319,101 @@ export default function QrcodeReaderComponent() {
         console.log(data);
     };
 
+
+    const handlePeer = async () => {
+        // 日本時間の現在時刻を取得
+        const currentTime = getJSTDate();
+
+        // ポップアップで合計金額を表示
+        window.alert(`合計: ${totalPeer} peer`);
+
+        // TradeDBにデータを保存する
+        try {
+            // トレード情報を保存
+            await fetchAndSetTrade2(currentTime);
+
+            // ディール詳細を保存
+            await fetchAndDealDetail2(currentTime);
+        } catch (error) {
+            console.error("An error occurred during the peer process:", error);
+        }
+
+        // すべての状態をクリア
+        setProducts([]);
+        setNewProduct(null);
+        setQuantity(0);
+        setProductTax(0.1);
+        setTotal(0);
+        setTotalWithTax(0);
+        setTotalPeer(0);
+        setUserName('ゲスト');
+        setToken('');
+    };
+
+    // トレード情報を保存する関数
+    const fetchAndSetTrade2 = async (buyTime: Date) => {
+        // buyTimeをISO文字列に変換
+        const buyTimeString = buyTime.toISOString();
+
+        const response = await fetch('https://tech0-gen-5-step4-studentwebapp-7.azurewebsites.net/trade', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                token: token,
+                store_id: 1,
+                staff_id: 1,
+                machine_id: 1,
+                total_charge: 0,
+                total_charge_wo_tax: 0,
+                total_peer: totalPeer,
+                buy_time: buyTimeString,
+            }),
+        });
+        if (!response.ok) {
+            throw new Error('Trade could not be added');
+        }
+        const data = await response.json();
+        console.log(data);
+    };
+
+    // ディール詳細を保存する関数
+    const fetchAndDealDetail2 = async (buyTime: Date) => {
+        if (products.length === 0) {
+            console.error("商品リストが空です。");
+            return;
+        }
+        // buyTimeをISO文字列に変換
+        const buyTimeString = buyTime.toISOString();
+        console.log(products);
+
+        const response = await fetch('https://tech0-gen-5-step4-studentwebapp-7.azurewebsites.net/deal_detail', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                products: products.map(product => ({
+                    barcode: product.barcode,
+                    product_name: product.product_name,
+                    price: 0,
+                    peer: product.peer,
+                    quantity: product.quantity,
+                    tax_percent: 0.0,
+                    buy_time: buyTimeString,
+                }))
+            }),
+        });
+        if (!response.ok) {
+            throw new Error('Deal Detail could not be added');
+        }
+        const data = await response.json();
+        console.log(data);
+    };
+
     return (
-        <div className="container"> 
+        <div className="container">
             <div className='font-bold mb-4'>ようこそ {userName}さん！</div>
 
             {/* バーコードスキャンセクション */}
@@ -323,14 +426,15 @@ export default function QrcodeReaderComponent() {
                 }}
                 />
             </div>
-                
+
             {/* スキャン情報表示セクション */}
             <div className="mb-8 border p-4 rounded-lg shadow">
                 <div className="1em">
                     <h2 className="text-lg font-bold mb-4">スキャン情報</h2>
-                        <div className='mb-1'>スキャン結果：{newProduct?.product_id ?? '未スキャン'}</div>
+                        <div className='mb-1'>スキャン結果：{newProduct?.registration_id ?? '未スキャン'}</div>
                         <div className='mb-1'>商品名：{newProduct?.product_name ?? '商品名未定'}</div>
                         <div className='mb-1'>値段：{newProduct?.price ?? 0}円</div>
+                        <div className='mb-1'>Peer：{newProduct?.peer ?? 0}</div>
                         <div className='mb-4'>
                             個数：
                             {newProduct?.quantity !== undefined ? (
@@ -369,6 +473,7 @@ export default function QrcodeReaderComponent() {
                         <div>
                             <h3 className="font-bold">{product.product_name} </h3>
                             <p>{product.price}円    x{product.quantity}個    {product.price * product.quantity}円</p>
+                            <p>{product.peer}peer    x{product.quantity}個    {product.peer * product.quantity}peer</p>
                         </div>
                         <button onClick={() => handleSetNewProduct(product)}className="ml-4 bg-gray-500 hover:bg-gray-700 text-white text-white text-sm font-bold py-1 px-2 rounded mr-2">
                             選択
@@ -380,10 +485,15 @@ export default function QrcodeReaderComponent() {
 
             {/* 合計金額を表示 */}
                 <div className="text-center">
-                    <h2 className="font-bold">合計: {totalWithTax} 円 （税抜: {total} 円）</h2>
-                    <button onClick={handlePurchase} 
+                    <h2 className="font-bold">合計: {totalWithTax} 円 （税抜: {total} 円）  {totalPeer} peer</h2>
+                    <button onClick={handlePurchase}
                     className="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4">
-                        購入</button>
+                        現金購入</button>
+                </div>
+                <div className="text-center">
+                    <button onClick={handlePeer}
+                    className="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4">
+                        Peer購入</button>
                 </div>
     </div>
     );
