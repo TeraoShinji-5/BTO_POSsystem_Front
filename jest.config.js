@@ -1,6 +1,6 @@
 module.exports = {
     preset: 'ts-jest',
-    testEnvironment: 'node',
+    testEnvironment: 'jsdom',
     setupFilesAfterEnv: ['@testing-library/jest-dom'],
     modulePathIgnorePatterns: ["<rootDir>/.next/"],
 };
