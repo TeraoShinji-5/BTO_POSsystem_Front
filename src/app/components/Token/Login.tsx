@@ -53,7 +53,7 @@ export default function Login() {
 
     return (
         <>
-             <style jsx>{`
+            <style jsx>{`
                 .background-flex {
                     background-image: repeating-linear-gradient(
                         90deg,
