@@ -52,7 +52,7 @@ export default function Login() {
 
     return (
         <>
-             <style jsx>{`
+            <style jsx>{`
                 .background-flex {
                     background-image: repeating-linear-gradient(
                         90deg,
@@ -71,7 +71,7 @@ export default function Login() {
                     padding: 20px;
                 }
                 `}</style>
-    
+
             <div className="background-flex">
                 <div className="form-container">
                     <div className="form-content">
