@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation';
+import Image from 'next/image'; 
 
 export default function MychoiceComponent() {
     const router = useRouter();
@@ -42,27 +43,27 @@ export default function MychoiceComponent() {
     };
 
     return (
-        <div className="container">
-        <div className='font-bold mb-4'>ようこそ {userName}さん！</div>
-        <div>
-        <button onClick={handleSetRegistration}>
-            登録
-            </button>
-        </div>
-        <div>
-        <button onClick={handleSetShopping}>
-            購入
-            </button>
-        </div>
-        </div>
+        <>
+            <div className="image-container">
+                <Image src="/danchipeer.png" alt="Welcome Image" width={400} height={400} />
+            </div>
+            <div className="container">
+                <div className='font-bold mb-4'>ようこそ {userName}さん！</div>
+                <div className="button-container">
+                    <div className="description">商品を登録する場合はこちらのボタンを押してください。</div>
+                    <button className="button bg-green-500 hover:bg-green-700 text-white font-bold py-2 rounded focus:outline-none focus:shadow-outline"
+                            onClick={handleSetRegistration}>
+                        商品登録
+                    </button>
+                </div>
+                <div className="button-container">
+                    <div className="description">商品を購入する場合はこちらのボタンを押してください。</div>
+                    <button className="button bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 rounded focus:outline-none focus:shadow-outline"
+                            onClick={handleSetShopping}>
+                        購入する
+                    </button>
+                </div>
+            </div>
+        </>
     );
 }
-
-
-
-
-
-
-
-
-
