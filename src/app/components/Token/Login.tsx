@@ -52,13 +52,16 @@ export default function Login() {
 
     return (
         <div className='login-page'>
-            <Image
-                src="/main.png"
-                alt="Login"
-                width={500} 
-                height={300} 
-                objectFit="contain" 
-            />   
+            <div className="login-image-column">
+                <Image
+                    src="/main.png"
+                    alt="Login"
+                    width={500} 
+                    height={300} 
+                    objectFit="contain" 
+                />
+            </div>
+            <div className="login-form-column">  
             <form ref={formRef} onSubmit={handleSend} className='login-form'>
                     <div className="mb-4">
                         <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="user_name">
@@ -68,7 +71,7 @@ export default function Login() {
                                     id="user_name" 
                                     name="user_name" 
                                     type="text"
-                                    placeholder="姓と名の間に全角スペースを入力" 
+                                    placeholder="姓と名の間に半角スペースを入力" 
                                     required />
                     </div>
                     <div className="mb-6">
@@ -87,6 +90,7 @@ export default function Login() {
                         SIGN IN
                     </button>
                 </form>
+            </div>
             </div>
 );
 }
