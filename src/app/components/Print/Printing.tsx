@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import JsBarcode from 'jsbarcode';
+import Image from 'next/image'; 
 
 
 export default function BarcodeGeneratorComponent() {
@@ -45,16 +46,26 @@ export default function BarcodeGeneratorComponent() {
     }, [registration_id]); // registration_idを依存配列に追加して、この値が変わった時にのみ実行されるようにします。
 
     return (
-        <div className="container">
-            <canvas id="barcode"></canvas>
-            <div className='font-bold mb-4'>{productName}</div>
-            <div className='font-bold mb-4'>値段： {price}</div>
-            <div className='font-bold mb-4'>peer： {peer}</div>
-            <div className='font-bold mb-4'>生産者： {userName}</div>
-            <button className="bg-orange-400 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
-                        印刷
-                    </button>
+        <>
+        <div className="print-container">
+            <div className="barcode-container">
+                <canvas id="barcode"></canvas>
+            </div>
+            <div className="text-container"> 
+                <div className='item-name font-bold mb-1'>商品名：{productName}</div>
+                <div className='price font-bold mb-1'>値段： {price}円</div>
+                <div className='peer font-bold mb-1'>ぴあ： {peer}ぴあ</div>
+                <div className='grower font-bold mb-1'>育てた人： {userName}</div>
+            </div>
+            <div className="print-image-container"> 
+            <img src="/receipt.png" alt="danchipeer" width={350} height={100}/>
         </div>
+        </div>
+        <div className='button-container'>
+            <button className="print-button bg-orange-400 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+                    印刷する
+            </button>
+        </div>
+        </>
     );
 }
-
