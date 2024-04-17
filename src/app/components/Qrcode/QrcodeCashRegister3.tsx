@@ -418,10 +418,10 @@ export default function QrcodeReaderComponent() {
         <div className="image-container">
             <Image src="/danchipeer.png" alt="Welcome Image" width={400} height={400} />
         </div>
-        <div className="container">
+        <div className='container'>
             <div className='font-bold mb-4'>ようこそ {userName}さん！</div>
-
-            {/* バーコードスキャンセクション */}
+        </div>
+        <div className="qr-container">
             <div className="mb-8 border p-4 rounded-lg shadow">
                 <h2 className="text-lg font-bold mb-4">バーコードスキャン</h2>
                 <div className="description">購入したい商品のバーコードを読み取ってください。</div>
@@ -492,18 +492,19 @@ export default function QrcodeReaderComponent() {
             </div>
 
             {/* 合計金額を表示 */}
-                <div className="text-center">
-                    <h2 className="font-bold">合計: {totalWithTax} 円 （税抜: {total} 円）  {totalPeer} ぴあ</h2>
-                    <button onClick={handlePurchase}
-                    className="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4">
-                        現金購入</button>
-                </div>
-                <div className="text-center">
-                    <button onClick={handlePeer}
-                    className="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4">
-                        ぴあ購入</button>
-                </div>
-    </div>
+            <div className="text-center">
+                <h2 className="font-bold">合計: {totalWithTax} 円 （税抜: {total} 円）  {totalPeer} ぴあ</h2>
+            </div>
+            <div className="button-container">
+                <button onClick={handlePurchase}
+                    className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4">
+                        現金で購入する
+                </button>
+                <button onClick={handlePeer}
+                    className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4">
+                        ぴあで購入する</button>
+            </div>
+        </div>
     </>
     );
 }

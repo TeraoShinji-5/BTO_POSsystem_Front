@@ -2,12 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
+.page-container {
+  position: relative; 
+  min-height: 100vh; 
+  display: flex;
+  flex-direction: column; 
+  justify-content: space-between; 
+}
+
 .login-page {
   display: flex;
   flex-direction: row; /* カラムを横に並べるように設定 */
   align-items: center; /* 垂直方向の中央に配置 */
   justify-content: center; /* 水平方向の中央に配置 */
   height: 100vh; /* ビューポートの高さ全体を使用 */
+  position: relative; 
+  z-index: 2;
 }
 
 .login-image-column {
@@ -27,10 +37,7 @@
 }
 
 .login-form {
-  width: 80%; /* フォームの幅を親要素の幅いっぱいにする */
-  /* padding: 20px; このスタイルは必要に応じて調整 */
-  /* border-radius: 5px; このスタイルは必要に応じて調整 */
-  /* background: rgb(255, 255, 255); このスタイルは必要に応じて調整 */
+  width: 80%; 
 }
 
 .container {
@@ -42,6 +49,25 @@
   max-width: 1200px; /* 最大幅を適切な値に設定 */
   margin: auto;
   padding: 20px;
+}
+
+.footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  position: absolute; /* 絶対位置指定 */
+  bottom: 0; /* ページの最下部に */
+  z-index: 1; /* コンテンツより前面に */
+}
+
+.qr-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-left: auto; 
+  margin-right: auto; 
+  max-width: 80%; /* コンテナの最大幅を80%に設定 */
 }
 
 .image-container {
@@ -57,19 +83,22 @@
 }
 
 .button-container {
-  margin-top: 50px;
   display: flex;
   flex-direction: column;
   align-items: center; /* ボタンを中央に揃える */
+  margin-top: 10px;
+  margin-left: auto; 
+  margin-right: auto;
+  margin-bottom: 50px; /* 下部のマージン */
   width: 100%; /* コンテナ全体の幅を指定 */
-  margin-bottom: 20px; /* 下部のマージン */
 }
   
 .button {
-  width: 100%; /* ボタンの幅を全体にする */
-  max-width: 400px; /* 最大幅を指定 */
-  padding: 10px 20px; /* パディングを適切に調整 */
-  /* その他のボタンのスタイル */
+  display: block;
+  width: 80%; /* ボタンの幅を80%に変更 */
+  max-width: 400px; /* 最大幅の制限を保持 */
+  margin: 0 auto; /* 中央揃えに */
+  padding: 10px 20px; 
 }
 
 .print-container {
@@ -83,7 +112,6 @@
   min-width: 320px; /* 最小幅を設定して小さなビューポートでの表示を改善 */
   display: flex;
   flex-direction: column;
-  align-items: center;
 }
 
 .text-container {
@@ -110,10 +138,22 @@
   margin-right: auto;
   width: fit-content;
 }
-
   
 /*レスポンシブデザインを考慮 */
 @media (max-width: 768px) {
+  body, html {
+    background-color: white;
+  }
+
+  .page-container {
+    min-height: auto; 
+    padding-bottom: 10px; 
+  }
+  
+  .footer {
+    position: relative; /* フッターが内容物の直後に来るように */
+  }
+    
   .login-page {
     flex-direction: column; /* 画面が狭いときはカラムを縦に並べる */
 }
@@ -128,8 +168,13 @@
     padding: 10px; /* 小さい画面でのパディングを少し小さくする */
 }
 
-    .container {
-      width: 100%; /* 小さい画面では幅を100%に設定 */
-      padding: 10px; /* パディングを少し小さく */
-  }
+  .container {
+    width: 100%; /* 小さい画面では幅を100%に設定 */
+    padding: 10px; /* パディングを少し小さく */
+}
+
+  .container-qr {
+    max-width: 100%; /* スマートフォンなどの狭い画面では幅を100%にする */
+    padding: 0 20px; /* スマートフォンでは左右にパディングを設定 */
+}
 }
