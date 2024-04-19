@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import QrcodeReader from './QrcodeReader';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Image from 'next/image'; 
 
 interface Product {
@@ -28,6 +28,8 @@ export default function QrcodeReaderComponent() {
     const [userName, setUserName] = useState('');
     const [token, setToken] = useState('');
     const user_token: string | null = useSearchParams().get("token");
+    const router = useRouter();
+    const [buy_time, setBuy_time] = useState('');
 
 
     async function fetchUser(token: string) {
@@ -231,6 +233,7 @@ export default function QrcodeReaderComponent() {
     const handlePurchase = async () => {
         // 日本時間の現在時刻を取得
         const currentTime = getJSTDate();
+        setBuy_time(currentTime.toISOString());
 
         // ポップアップで合計金額を表示
         window.alert(`合計(税込): ${totalWithTax}円 (税抜: ${total}円)`);
@@ -242,6 +245,7 @@ export default function QrcodeReaderComponent() {
 
             // ディール詳細を保存
             await fetchAndDealDetail(currentTime);
+
         } catch (error) {
             console.error("An error occurred during the purchase process:", error);
         }
@@ -256,11 +260,13 @@ export default function QrcodeReaderComponent() {
         setTotalPeer(0);
         setUserName('ゲスト');
         setToken('');
+
     };
 
     // トレード情報を保存する関数
     const fetchAndSetTrade = async (buyTime: Date) => {
         // buyTimeをISO文字列に変換
+
         const buyTimeString = buyTime.toISOString();
 
         const response = await fetch('https://tech0-gen-5-step4-studentwebapp-7.azurewebsites.net/trade', {
@@ -293,6 +299,7 @@ export default function QrcodeReaderComponent() {
             return;
         }
         // buyTimeをISO文字列に変換
+
         const buyTimeString = buyTime.toISOString();
         console.log(products);
 
@@ -324,6 +331,7 @@ export default function QrcodeReaderComponent() {
     const handlePeer = async () => {
         // 日本時間の現在時刻を取得
         const currentTime = getJSTDate();
+        setBuy_time(currentTime.toISOString());
 
         // ポップアップで合計金額を表示
         window.alert(`合計: ${totalPeer} peer`);
@@ -335,6 +343,8 @@ export default function QrcodeReaderComponent() {
 
             // ディール詳細を保存
             await fetchAndDealDetail2(currentTime);
+
+
         } catch (error) {
             console.error("An error occurred during the peer process:", error);
         }
@@ -349,11 +359,13 @@ export default function QrcodeReaderComponent() {
         setTotalPeer(0);
         setUserName('ゲスト');
         setToken('');
-    };
+
+};
 
     // トレード情報を保存する関数
     const fetchAndSetTrade2 = async (buyTime: Date) => {
         // buyTimeをISO文字列に変換
+
         const buyTimeString = buyTime.toISOString();
 
         const response = await fetch('https://tech0-gen-5-step4-studentwebapp-7.azurewebsites.net/trade', {
@@ -412,6 +424,20 @@ export default function QrcodeReaderComponent() {
         const data = await response.json();
         console.log(data);
     };
+
+    // buy_timeが更新された後にページ遷移を行う
+    useEffect(() => {
+        if (buy_time) {
+            window.open(`/receipt?buy_time=${buy_time}`, '_blank');
+            //router.push(`/receipt?buy_time=${buy_time}`);
+        }
+    }, [buy_time]);
+
+    function formatDateTime(input: string): string {
+        return input
+          .replace(/%20/g, ' ')  // "%20"をスペースに置換
+          .replace(/\//g, '-');  // "/"を"-"に置換
+    }
 
     return (
         <>
