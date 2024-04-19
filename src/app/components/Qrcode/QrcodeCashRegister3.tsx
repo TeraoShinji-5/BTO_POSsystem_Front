@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import QrcodeReader from './QrcodeReader';
 import { useSearchParams, useRouter } from 'next/navigation';
+import Image from 'next/image'; 
 
 interface Product {
     registration_id: number;
@@ -439,12 +440,17 @@ export default function QrcodeReaderComponent() {
     }
 
     return (
-        <div className="container">
+        <>
+        <div className="image-container">
+            <Image src="/danchipeer.png" alt="Welcome Image" width={400} height={400} />
+        </div>
+        <div className='container'>
             <div className='font-bold mb-4'>ようこそ {userName}さん！</div>
-
-            {/* バーコードスキャンセクション */}
+        </div>
+        <div className="qr-container">
             <div className="mb-8 border p-4 rounded-lg shadow">
                 <h2 className="text-lg font-bold mb-4">バーコードスキャン</h2>
+                <div className="description">購入したい商品のバーコードを読み取ってください。</div>
                 <QrcodeReader
                 onScanSuccess={onNewScanResult}
                 onScanFailure={(error: any) => {
@@ -457,10 +463,11 @@ export default function QrcodeReaderComponent() {
             <div className="mb-8 border p-4 rounded-lg shadow">
                 <div className="1em">
                     <h2 className="text-lg font-bold mb-4">スキャン情報</h2>
+                    <div className="description">あなたが購入しようとしている商品の情報です。</div>
                         <div className='mb-1'>スキャン結果：{newProduct?.registration_id ?? '未スキャン'}</div>
                         <div className='mb-1'>商品名：{newProduct?.product_name ?? '商品名未定'}</div>
                         <div className='mb-1'>値段：{newProduct?.price ?? 0}円</div>
-                        <div className='mb-1'>Peer：{newProduct?.peer ?? 0}</div>
+                        <div className='mb-1'>ぴあ：{newProduct?.peer ?? 0}ぴあ</div>
                         <div className='mb-4'>
                             個数：
                             {newProduct?.quantity !== undefined ? (
@@ -492,6 +499,7 @@ export default function QrcodeReaderComponent() {
             {/* カート表示セクション */}
             <div className="mb-8 p-4 border rounded-lg shadow">
             <h2 className="text-lg font-bold mb-4">カート</h2>
+            <div className="description">現在カートに入っている商品の一覧です。</div>
             {products.map((product, index) => (
                 // 商品ごとに上線を引き、最初の商品以外は上線をなくす
                 <div key={index}className={`pt-4 ${index > 0 ? 'border-t' : ''}`}>
@@ -499,7 +507,7 @@ export default function QrcodeReaderComponent() {
                         <div>
                             <h3 className="font-bold">{product.product_name} </h3>
                             <p>{product.price}円    x{product.quantity}個    {product.price * product.quantity}円</p>
-                            <p>{product.peer}peer    x{product.quantity}個    {product.peer * product.quantity}peer</p>
+                            <p>{product.peer}ぴあ    x{product.quantity}個    {product.peer * product.quantity}peer</p>
                         </div>
                         <button onClick={() => handleSetNewProduct(product)}className="ml-4 bg-gray-500 hover:bg-gray-700 text-white text-white text-sm font-bold py-1 px-2 rounded mr-2">
                             選択
@@ -510,25 +518,19 @@ export default function QrcodeReaderComponent() {
             </div>
 
             {/* 合計金額を表示 */}
-                <div className="text-center">
-                    <h2 className="font-bold">合計: {totalWithTax} 円 （税抜: {total} 円）  {totalPeer} peer</h2>
-                    <button onClick={handlePurchase}
-                    className="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4">
-                        現金購入</button>
-                </div>
-                <div className="text-center">
-                    <button onClick={handlePeer}
-                    className="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4">
-                        Peer購入</button>
-                </div>
-    </div>
+            <div className="text-center">
+                <h2 className="font-bold">合計: {totalWithTax} 円 （税抜: {total} 円）  {totalPeer} ぴあ</h2>
+            </div>
+            <div className="button-container">
+                <button onClick={handlePurchase}
+                    className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4">
+                        現金で購入する
+                </button>
+                <button onClick={handlePeer}
+                    className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-4">
+                        ぴあで購入する</button>
+            </div>
+        </div>
+    </>
     );
 }
-
-
-
-
-
-
-
-

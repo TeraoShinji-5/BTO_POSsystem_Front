@@ -2,6 +2,7 @@
 import { useRef, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image'; 
 
 interface Registrations {
     registration_id: number;
@@ -134,11 +135,15 @@ export default function BarcodeGeneratorComponent() {
     };
 
     return (
+        <>
+            <div className="image-container">
+                <Image src="/danchipeer.png" alt="Top Image" width={400} height={400} />
+            </div>
         <div className="container">
             <div className='font-bold mb-4'>ようこそ {userName}さん！</div>
             <div>
                 <form ref={formRef} onSubmit={handleSend}>
-                    <h1 className="text-6xl font-bold mb-10 text-center">ゆーあーる  やさい  とうろく！</h1>
+                    <div className="description">商品を登録する場合はこちらのボタンを押してください。</div>
                     <div className="mb-4">
                         <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="product_name">
                             野菜:
@@ -147,22 +152,22 @@ export default function BarcodeGeneratorComponent() {
                                 className="shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                                 id="product_name"
                                 name="product_name"
-                                required
-                            >
+                                required>
                                 {vegetablesData.map((vegetable, index) => (
                                     <option key={index} value={vegetable}>{vegetable}</option>
                                 ))}
                             </select>
                     </div>
                     <div className="mb-6">
-                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="price">
+                        <label className="block text-gray-700 text-sm font-bold mb-2" 
+                                htmlFor="price">
                             価格：
                         </label>
                         <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" id="price" name="price" type="text" required />
                     </div>
                     <div className="mb-6">
                         <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="peer">
-                            peer：
+                            ぴあ：
                         </label>
                         <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" id="peer" name="peer" type="text" required />
                     </div>
@@ -188,24 +193,23 @@ export default function BarcodeGeneratorComponent() {
                             </select>
                     </div>
                     <div className="mb-6">
-                        <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="message">
+                        <label className="block text-gray-700 text-sm font-bold mb-2" 
+                                htmlFor="message">
                             メッセージ内容：
                         </label>
-                        <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" id="message" name="message" type="text" required />
+                        <input className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" 
+                                    id="message" 
+                                    name="message" 
+                                    type="text" 
+                                    placeholder="あなたの想いを伝えましょう！"
+                                    required />
                     </div>
-                    <button className="bg-orange-400 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
-                        登録
+                    <button className="button bg-green-500 hover:bg-green-700 text-white font-bold py-2 rounded focus:outline-none focus:shadow-outline">
+                        商品登録
                     </button>
                 </form>
             </div>
     </div>
+    </>
     );
 }
-
-
-
-
-
-
-
-
