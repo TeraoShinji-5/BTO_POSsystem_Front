@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Image from 'next/image'; 
 
+
 interface Deal_Details {
     product_name: string;
     quantity: number;
