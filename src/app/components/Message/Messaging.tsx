@@ -1,6 +1,8 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
+import Image from 'next/image'; 
+
 
 interface Deal_Details {
     product_name: string;
@@ -140,50 +142,74 @@ export default function GenerateReceipt() {
 
 
     return (
+        <>
+        <div className="image-container">
+                <Image src="/danchipeer.png" alt="Welcome Image" width={300} height={400} />
+            </div>
         <div className="container">
-            <div className='font-bold mb-4'>レシート</div>
-            <div className='font-bold mb-4'>日時：{jstDate}</div>
-            <div className='font-bold mb-4'>店舗： {store_id}</div>
-            <div className='font-bold mb-4'>レジ担当者： {staff_id}</div>
-            <div className='font-bold mb-4'>POSNo.： {machine_id}</div>
-            <div className='font-bold mb-4'>合計金額： {total_charge} 円（税込）</div>
-            <div className='font-bold mb-4'>税抜合計： {total_charge_wo_tax} 円（税抜）</div>
-            <div className='font-bold mb-4'>合計Peer： {total_peer}</div>
-            <div>
-                {deal_details.map((deal_detail, index) => (
-                    <div key={index} className={`pt-4 ${index > 0 ? 'border-t' : ''}`}>
-                        <div className="flex justify-between items-center">
-                            <div>
-                                <h3 className="font-bold">{deal_detail.product_name}</h3>
-                                {deal_detail.price > 0 && (
-                                    <p>{deal_detail.price}円 x {deal_detail.quantity}個 = {deal_detail.price * deal_detail.quantity}円  生産者：{deal_detail.user_name} さん</p>
-                                )}
-                                {deal_detail.peer > 0 && (
-                                    <p>{deal_detail.peer}peer x {deal_detail.quantity}個 = {deal_detail.peer * deal_detail.quantity}peer  生産者：{deal_detail.user_name} さん</p>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                ))}
+            <div className='font-bold mb-4'>お買い上げありがとうございました！
             </div>
-            <div>
-                {messaging.map((message_info, index) => (
-                    <div key={index} className={`pt-4 ${index > 0 ? 'border-t' : ''}`}>
-                        <div className="flex justify-between items-center">
-                            <div>
-                            {message_info.message != ""  && (
-                                <div>
-                                <p>{message_info.seller_name} さん</p>
-                                <p>{message_info.message}</p>
-                                <p>{message_info.range_name} に住む {message_info.buyer_name}  より </p>
-                                </div>
+        <div className="text-container">
+            <div className='mb-1'>日時：{jstDate}</div>
+            <div className='mb-1'>店舗： {store_id}</div>
+            <div className='mb-1'>レジ担当者： {staff_id}</div>
+            <div className='mb-1'>POSNo.： {machine_id}</div>
+            <div className='mb-1 subtotal-line'></div>   
+            <div className='font-bold'>購入品目</div>
+            {/* 購入品目のリスト表示 */}
+            {deal_details.map((deal_detail, index) => (
+                <div key={index} className={`pt-4 ${index > 0 ? 'border-t' : ''}`}>
+                    <div className="flex justify-between items-center">
+                        <div>
+                            <p>{deal_detail.product_name}</p>
+                            {deal_detail.price > 0 && (
+                                <h3 className="mb-2">{deal_detail.price}円 x {deal_detail.quantity}個 = {deal_detail.price * deal_detail.quantity}円 
+                                作った人：{deal_detail.user_name} さん</h3>
                             )}
-                            </div>
+                            {deal_detail.peer > 0 && (
+                                <h3 className="mb-2">{deal_detail.peer}peer x {deal_detail.quantity}個 = {deal_detail.peer * deal_detail.quantity}peer 
+                                作った人：{deal_detail.user_name} さん</h3>
+                            )}
                         </div>
                     </div>
-                ))}
-            </div>
-        </div>
-    );
-}
+                </div>
+            ))}
 
+            <div className='mb-2'>小計： {total_charge_wo_tax} 円（税抜）</div>
+            <div className='mb-2 subtotal-line'></div>
+            <div className='font-bold mb-2'>合計金額： {total_charge} 円（税込）</div>
+            <div className='font-bold mb-2'>合計ぴあ： {total_peer}ぴあ</div>
+        </div>
+
+        <div className="print-image-container"> 
+            <img src="/footer.png" alt="danchipeer" width={350} height={100}/>
+        </div>
+
+        <div className="container">
+            <div className='font-bold'>あなたへのメッセージ
+            </div>
+            
+        <div className="container">
+        {messaging.map((message_info, index) => (
+            <div key={index} className={`pt-4 ${index > 0 ? 'border-t' : ''}`}>
+                <div>
+                    <div>
+                    <div className='mb-1' >{message_info.message}</div>
+                    <div className='mb-4'>{message_info.range_name} に住む {message_info.buyer_name} より</div>
+                    </div>
+                    <button className="mb-4 ml-4 bg-blue-500 hover:bg-blue-700 text-white text-white text-sm font-bold py-1 px-2 rounded mr-2">
+                        メッセージを送る
+                    </button>
+                </div>
+
+        <div className="print-image-container"> 
+            <img src="/footer.png" alt="danchipeer" width={350} height={100}/>
+        </div>
+        
+                </div>
+            ))}
+        </div>
+    </div>
+    </div>
+    </>
+)};
